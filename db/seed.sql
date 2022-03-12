@@ -34,9 +34,14 @@ VALUES
 
 
 
-
-
-
-
-
 INSERT INTO employee(first_name, last_name, role_id, manager_id)
+VALUES
+("Sarah", "Parker", 1, NULL), 
+("James","Lee", 1, NULL),
+("Arun","Singh", 2, NULL),
+("Dav", "Kudhail", 2, NULL),
+("Peter", "Parker", 3, NULL),
+("Bav", "Kudhail", 4, NULL),
+("Hannah", "Millar", 5, NULL),
+("Yavor", "Ivanov", 5, NULL),
+("Mia", "Malora", 6, NULL)
