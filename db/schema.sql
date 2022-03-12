@@ -1,0 +1,16 @@
+DROP DATABASE eTracker_db;
+
+CREATE DATABASE eTracker_db;
+
+USE eTracker_db
+
+-- DEPARTMENT TABLE 
+CREATE TABLE department()
+
+
+-- ROLE TABLE
+CREATE TABLE role()
+
+
+-- EMPLOYEE TABLE 
+CREATE TABLE employee()
