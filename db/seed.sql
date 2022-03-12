@@ -1,4 +1,11 @@
 INSERT INTO department(name)
+VALUES
+("Marketing"),
+("Sales"),
+("Finance"),
+("Engineering"),
+("Design"),
+("HR");
 
 INSERT INTO role(title, salary, department_id)
 
