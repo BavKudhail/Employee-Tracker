@@ -351,14 +351,43 @@ function addEmployee() {
         console.log(roles);
 
         // inquirer prompt to select role
-        inquirer.prompt([
-          {
-            type: "list",
-            name: "role",
-            message: "What is the role of the employee?",
-            choices: roles,
-          },
-        ]);
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              name: "role",
+              message: "What is the role of the employee?",
+              choices: roles,
+            },
+          ])
+          .then((selection) => {
+            //   push selection to inputs array
+            const role = selection.role;
+            inputs.push(role);
+
+            const managerSql = `SELECT * FROM employee`;
+
+            // sql query to get all employee data
+            connection.query(managerSql, (err, data) => {
+              if (err) throw err;
+
+              //   functional loop to get names of all employees
+              const managers = data.map(({ id, first_name, last_name }) => ({
+                name: first_name + " " + last_name,
+                value: id,
+              }));
+
+              //   inquirer prompt to select a manager
+              inquirer.prompt([
+                {
+                  type: "list",
+                  name: "manager",
+                  message: "Who is the manager of this employee?",
+                  choices: managers,
+                },
+              ]);
+            });
+          });
       });
     });
 }
