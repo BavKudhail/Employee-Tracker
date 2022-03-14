@@ -147,7 +147,18 @@ function viewAllEmployees() {
 
 // Function to view all departments
 function viewAllDepartments() {
-  console.log("Execute View All Departments");
+  const sql = `SELECT 
+  department.id,
+  department.name
+  FROM
+  department
+  `;
+
+  connection.query(sql, (err, rows) => {
+    if (err) throw err;
+    console.table(rows);
+    runPrompt();
+  });
 }
 
 // Function to view all roles
