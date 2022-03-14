@@ -44,27 +44,39 @@ function logo() {
 }
 
 const runPrompt = () => {
-  inquirer.prompt([
-    {
-      type: "list",
-      name: "choices",
-      message: "What would you like to do today?",
-      name: "action",
-      choices: [
-        "View All Employees",
-        "View All Departments",
-        "View All Roles",
-        "View All Employees By Department",
-        "Add Department",
-        "Add Role",
-        "Add Employee",
-        "Update Employee Role",
-        "Update Employee Manager",
-        "Delete Department",
-        "Delete Role",
-        "Delete Employee",
-        "None",
-      ],
-    },
-  ]);
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "action",
+        message: "What would you like to do today?",
+        choices: [
+          "View All Employees",
+          "View All Departments",
+          "View All Roles",
+          "View All Employees By Department",
+          "Add Department",
+          "Add Role",
+          "Add Employee",
+          "Update Employee Role",
+          "Update Employee Manager",
+          "Delete Department",
+          "Delete Role",
+          "Delete Employee",
+          "None",
+        ],
+      },
+    ])
+    .then(function (answers) {
+      switch (answers.action) {
+        //   cases
+        case "View All Employees":
+          viewAllEmployees();
+          break;
+
+        case "View All Departments":
+          viewAllDepartments();
+          break;
+      }
+    });
 };
