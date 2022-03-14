@@ -77,6 +77,87 @@ const runPrompt = () => {
         case "View All Departments":
           viewAllDepartments();
           break;
+
+        case "View All Roles":
+          viewAllRoles();
+          break;
+
+        case "View All Employees By Department":
+          viewEmployeesByDept();
+          break;
+
+        case "Add Department":
+          addDept();
+          break;
+
+        case "Add Role":
+          addRole();
+          break;
+
+        case "Add Employee":
+          addEmployee();
+          break;
+
+        case "Update Employee Role":
+          updateEmployeeRole();
+          break;
+
+        case "Update Employee Manager":
+          updateEmployeeManager();
+          break;
+
+        case "Delete Department":
+          deleteDept();
+          break;
+
+        case "Delete Role":
+          deleteRole();
+          break;
+
+        case "Delete Employee":
+          deleteEmployee();
+          break;
+
+        case "None":
+          db.end();
       }
     });
 };
+
+// FUNCTIONS
+
+// Function to view all employees
+function viewAllEmployees() {}
+
+// Function to view all departments
+function viewAllDepartments() {}
+
+// Function to view all roles
+function viewAllRoles() {}
+
+// Function to view employees by department
+function viewEmployeesByDept() {}
+
+// Function to add department
+function addDept() {}
+
+// Function to add role
+function addRole() {}
+
+// Function to view add an employee
+function addEmployee() {}
+
+// Function to update employee role
+function updateEmployeeRole() {}
+
+// Function to update employee manager
+function updateEmployeeManager() {}
+
+// Function to delete department
+function deleteDept() {}
+
+// Function to delete role
+function deleteRole() {}
+
+// Function to delete an employee
+function deleteEmployee() {}
