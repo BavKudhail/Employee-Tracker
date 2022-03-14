@@ -378,14 +378,31 @@ function addEmployee() {
               }));
 
               //   inquirer prompt to select a manager
-              inquirer.prompt([
-                {
-                  type: "list",
-                  name: "manager",
-                  message: "Who is the manager of this employee?",
-                  choices: managers,
-                },
-              ]);
+              inquirer
+                .prompt([
+                  {
+                    type: "list",
+                    name: "manager",
+                    message: "Who is the manager of this employee?",
+                    choices: managers,
+                  },
+                ])
+                .then((managerSelection) => {
+                  // push chosen manager to input array
+                  const manager = managerSelection.manager;
+                  inputs.push(manager);
+
+                  // SQL query
+                  const managerSql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                  VALUES (?, ?, ?, ?)`;
+
+                  connection.query(managerSql, inputs, (err, result) => {
+                    if (err) throw err;
+                    console.log("You have successfully added a new employee!");
+
+                    viewAllEmployees();
+                  });
+                });
             });
           });
       });
