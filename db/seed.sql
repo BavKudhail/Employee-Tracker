@@ -35,11 +35,20 @@ VALUES
 INSERT INTO employee(first_name, last_name, role_id, manager_id)
 VALUES
 ("Sarah", "Parker", 1, NULL), 
-("James","Lee", 1, NULL),
+("James","Lee", 1, 1),
 ("Arun","Singh", 2, NULL),
-("Dav", "Kudhail", 2, NULL),
+("Dav", "Kudhail", 2, 2),
 ("Peter", "Parker", 3, NULL),
+("Hannah", "Millar", 4, 4),
 ("Bav", "Kudhail", 4, NULL),
-("Hannah", "Millar", 5, NULL),
-("Yavor", "Ivanov", 5, NULL),
-("Mia", "Malora", 6, NULL);
+("Yavor", "Ivanov", 4, 4),
+("Mia", "Malora", 4, NULL),
+("John", "Doe", 4, 4), 
+("Polly","Smith", 5, NULL),
+("Thomas","Shelby", 5, 5),
+("Arhur", "Singh", 5, NULL),
+("Isiah", "Parker", 6, 6),
+("Johnny", "Renner", 6, NULL),
+("Esme", "Millar", 6, 6),
+("Liam", "Ivanov", 6, NULL),
+("Lilly", "Foster", 6, 6);

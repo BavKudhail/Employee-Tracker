@@ -119,6 +119,17 @@ const runPrompt = () => {
           break;
 
         case "None":
+          // end
+          figlet("Goodbye!", function (err, data) {
+            if (err) {
+              console.log("Something went wrong...");
+              console.dir(err);
+              return;
+            }
+            console.log(data);
+            runPrompt();
+          });
+
           connection.end();
       }
     });
@@ -485,13 +496,12 @@ function updateEmployeeManager() {
 }
 
 // Function to view employee by manager
-function viewEmployeeByManager() {}
+function viewEmployeeByManager() {
+  //   SQL to get manager information
+}
 
 // Function to view employees by department
 function viewEmployeesByDept() {
-  // View employees by department
-  // 1 - Select a department
-
   //   SQL to get department information
   const deptSql = `SELECT
       name, 
@@ -509,6 +519,7 @@ function viewEmployeesByDept() {
       value: id,
     }));
 
+    // prompt to select the department
     inquirer
       .prompt([
         {
@@ -522,6 +533,7 @@ function viewEmployeesByDept() {
         const department = selection.dept;
         console.log(department);
 
+        // sql query to select department based on their role ID
         const sql = `SELECT * FROM employee WHERE role_id = ${department}`;
 
         connection.query(sql, (err, result) => {
@@ -532,23 +544,6 @@ function viewEmployeesByDept() {
       });
   });
 }
-
-// .then((selection) => {
-//             //   push selection to inputs array
-//             const role = selection.role;
-//             inputs.push(role);
-
-//             const managerSql = `SELECT * FROM employee`;
-
-//             // sql query to get all employee data
-//             connection.query(managerSql, (err, data) => {
-//               if (err) throw err;
-
-//               //   functional loop to get names of all employees
-//               const managers = data.map(({ id, first_name, last_name }) => ({
-//                 name: first_name + " " + last_name,
-//                 value: id,
-//               }));
 
 // Function to delete department
 function deleteDept() {
