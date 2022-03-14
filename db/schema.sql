@@ -1,4 +1,4 @@
-DROP DATABASE eTracker_db;
+DROP DATABASE IF EXISTS eTracker_db;
 
 -- CREATE DATABASE 
 CREATE DATABASE eTracker_db;
