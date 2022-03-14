@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // connect to database
-const db = mysql.createConnection(
+const connection = mysql.createConnection(
   {
     host: "localhost",
     // MySQL username,
@@ -25,7 +25,7 @@ const db = mysql.createConnection(
   console.log(`Connected to eTracker_db database`)
 );
 
-db.connect((err) => {
+connection.connect((err) => {
   if (err) throw err;
   //   show logo
   logo();
@@ -39,8 +39,8 @@ function logo() {
       return;
     }
     console.log(data);
+    runPrompt();
   });
-  runPrompt();
 }
 
 const runPrompt = () => {
@@ -119,7 +119,7 @@ const runPrompt = () => {
           break;
 
         case "None":
-          db.end();
+          connection.end();
       }
     });
 };
@@ -127,37 +127,75 @@ const runPrompt = () => {
 // FUNCTIONS
 
 // Function to view all employees
-function viewAllEmployees() {}
+function viewAllEmployees() {
+  const sql = `SELECT 
+    employee.id,
+    employee.first_name,
+    employee.last_name,
+    employee.role_id,
+    employee.manager_id
+    FROM 
+    employee
+    `;
+
+  connection.query(sql, (err, rows) => {
+    if (err) throw err;
+    console.table(rows);
+    runPrompt();
+  });
+}
 
 // Function to view all departments
-function viewAllDepartments() {}
+function viewAllDepartments() {
+  console.log("Execute View All Departments");
+}
 
 // Function to view all roles
-function viewAllRoles() {}
+function viewAllRoles() {
+  console.log("Execute View All Roles");
+}
 
 // Function to view employees by department
-function viewEmployeesByDept() {}
+function viewEmployeesByDept() {
+  console.log("Execute View Employees By Department");
+}
 
 // Function to add department
-function addDept() {}
+function addDept() {
+  console.log("Execute Add Department");
+}
 
 // Function to add role
-function addRole() {}
+function addRole() {
+  console.log("Execute Add Role");
+}
 
 // Function to view add an employee
-function addEmployee() {}
+function addEmployee() {
+  console.log("Execute Add Employee");
+}
 
 // Function to update employee role
-function updateEmployeeRole() {}
+function updateEmployeeRole() {
+  console.log("Execute Update Employee Role");
+}
 
 // Function to update employee manager
-function updateEmployeeManager() {}
+function updateEmployeeManager() {
+  console.log("Execute Update Employee Manager");
+}
 
 // Function to delete department
-function deleteDept() {}
+function deleteDept() {
+  console.log("Execute Delete Department");
+}
 
 // Function to delete role
-function deleteRole() {}
+function deleteRole() {
+  console.log("Execute Delete Role");
+}
 
 // Function to delete an employee
-function deleteEmployee() {}
+function deleteEmployee() {
+  console.log("Execute Delete Employee");
+}
