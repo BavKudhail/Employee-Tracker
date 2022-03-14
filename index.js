@@ -400,6 +400,7 @@ function addEmployee() {
                     if (err) throw err;
                     console.log("You have successfully added a new employee!");
 
+                    // execute view all employees function
                     viewAllEmployees();
                   });
                 });
@@ -409,8 +410,75 @@ function addEmployee() {
     });
 }
 
+// DEBUG THE FUNCTION BELOW
 // Function to update employee role
-function updateEmployeeRole() {}
+function updateEmployeeRole() {
+  const employeeSql = `
+    SELECT * FROM employee
+  `;
+  connection.query(employeeSql, (err, data) => {
+    if (err) throw err;
+    // functional loop to get names of all employees
+    const employee = data.map(({ id, first_name, last_name }) => ({
+      name: first_name + " " + last_name,
+      value: id,
+    }));
+    // inquirer prompt to select an employee
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "employee",
+          message: "Please select the employee that you wish to update",
+          choices: employee,
+        },
+      ])
+      .then((employeeSelection) => {
+        const employee = employeeSelection.employee;
+        const inputs = [];
+        inputs.push(employee);
+
+        const roleSql = `SELECT
+        * FROM role`;
+
+        // sql query to get all possible roles
+        connection.query(roleSql, (err, data) => {
+          if (err) throw err;
+
+          // get employee role
+          const roles = data.map(({ id, title }) => ({
+            name: title,
+            value: id,
+          }));
+          inquirer
+            .prompt([
+              {
+                type: "list",
+                name: "role",
+                message: "Please select the new role of the employee",
+                choices: roles,
+              },
+            ])
+            .then((roleSelection) => {
+              const role = roleSelection.role;
+              inputs.push(role);
+
+              console.log(inputs);
+              console.log(inputs[0], inputs[1]);
+
+              const updateSql = `
+              UPDATE employee SET role_id = ? WHERE id = ?`;
+
+              connection.query(updateSql, inputs, (err, result) => {
+                if (err) throw err;
+                console.log(`${inputs[0]} and ${inputs[1]} ${role}`);
+                viewAllEmployees();
+              });
+            });
+        });
+      });
+  });
+}
 
 // Function to update employee manager
 function updateEmployeeManager() {
