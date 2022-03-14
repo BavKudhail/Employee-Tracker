@@ -178,9 +178,6 @@ function viewAllRoles() {
   });
 }
 
-// Function to view employees by department
-function viewEmployeesByDept() {}
-
 // Function to add department
 function addDept() {
   inquirer
@@ -410,7 +407,6 @@ function addEmployee() {
     });
 }
 
-// DEBUG THE FUNCTION BELOW
 // Function to update employee role
 function updateEmployeeRole() {
   const employeeSql = `
@@ -473,6 +469,7 @@ function updateEmployeeRole() {
                 if (err) throw err;
                 console.log(`${inputs[0]} and ${inputs[1]} ${role}`);
                 viewAllEmployees();
+                // show the updated employee role on screen
               });
             });
         });
@@ -480,17 +477,85 @@ function updateEmployeeRole() {
   });
 }
 
+// BONUS FUNCTIONALITY
+
 // Function to update employee manager
 function updateEmployeeManager() {
   console.log("Execute Update Employee Manager");
 }
+
+// Function to view employee by manager
+function viewEmployeeByManager() {}
+
+// Function to view employees by department
+function viewEmployeesByDept() {
+  // View employees by department
+  // 1 - Select a department
+
+  //   SQL to get department information
+  const deptSql = `SELECT
+      name, 
+      id
+      FROM
+      department`;
+
+  connection.query(deptSql, (err, data) => {
+    if (err) throw err;
+    console.log(data);
+
+    // functional loop to create a list of departments
+    const department = data.map(({ name, id }) => ({
+      name: name,
+      value: id,
+    }));
+
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "dept",
+          message: "Please select the department you wish to view",
+          choices: department,
+        },
+      ])
+      .then((selection) => {
+        const department = selection.dept;
+        console.log(department);
+
+        const sql = `SELECT * FROM employee WHERE role_id = ${department}`;
+
+        connection.query(sql, (err, result) => {
+          if (err) throw err;
+          console.log("Showing all employees from your selected department");
+          console.table(result);
+        });
+      });
+  });
+}
+
+// .then((selection) => {
+//             //   push selection to inputs array
+//             const role = selection.role;
+//             inputs.push(role);
+
+//             const managerSql = `SELECT * FROM employee`;
+
+//             // sql query to get all employee data
+//             connection.query(managerSql, (err, data) => {
+//               if (err) throw err;
+
+//               //   functional loop to get names of all employees
+//               const managers = data.map(({ id, first_name, last_name }) => ({
+//                 name: first_name + " " + last_name,
+//                 value: id,
+//               }));
 
 // Function to delete department
 function deleteDept() {
   console.log("Execute Delete Department");
 }
 
-// Function to delete role
+// Function to delete a role
 function deleteRole() {
   console.log("Execute Delete Role");
 }
