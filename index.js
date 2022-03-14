@@ -40,4 +40,31 @@ function logo() {
     }
     console.log(data);
   });
+  runPrompt();
 }
+
+const runPrompt = () => {
+  inquirer.prompt([
+    {
+      type: "list",
+      name: "choices",
+      message: "What would you like to do today?",
+      name: "action",
+      choices: [
+        "View All Employees",
+        "View All Departments",
+        "View All Roles",
+        "View All Employees By Department",
+        "Add Department",
+        "Add Role",
+        "Add Employee",
+        "Update Employee Role",
+        "Update Employee Manager",
+        "Delete Department",
+        "Delete Role",
+        "Delete Employee",
+        "None",
+      ],
+    },
+  ]);
+};
