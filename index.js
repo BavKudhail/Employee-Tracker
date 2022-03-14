@@ -25,18 +25,19 @@ const db = mysql.createConnection(
   console.log(`Connected to eTracker_db database`)
 );
 
-// db.connect(function (err) {
-//   if (err) throw err;
-//   console.log(`connected as id: ${connection.threadId}`);
-// });
+db.connect((err) => {
+  if (err) throw err;
+  //   show logo
+  logo();
+});
 
-// const printLogo = () => {
-//   figlet("Hello World!!", function (err, data) {
-//     if (err) {
-//       console.log("Something went wrong...");
-//       console.dir(err);
-//       return;
-//     }
-//     console.log(data);
-//   });
-// };
+function logo() {
+  figlet("Employee Database!!", function (err, data) {
+    if (err) {
+      console.log("Something went wrong...");
+      console.dir(err);
+      return;
+    }
+    console.log(data);
+  });
+}
