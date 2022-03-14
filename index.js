@@ -211,7 +211,34 @@ function addDept() {
 
 // Function to add role
 function addRole() {
-  console.log("Execute Add Role");
+  inquirer.prompt([
+    {
+      type: "input",
+      name: "role",
+      message: "What role title would you like to add?",
+      validate: (addRole) => {
+        if (addRole) {
+          return true;
+        } else {
+          console.log("Please enter a valid role");
+          return false;
+        }
+      },
+    },
+    {
+      type: "input",
+      name: "salary",
+      message: "What is the salary of the role?",
+      validate: (addSalary) => {
+        if (isNaN(addSalary)) {
+          return true;
+        } else {
+          console.log("Please enter a valid salary");
+          return false;
+        }
+      },
+    },
+  ]);
 }
 
 // Function to view add an employee
