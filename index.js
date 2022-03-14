@@ -248,14 +248,14 @@ function addRole() {
       const inputs = [answer.role, answer.salary];
       console.log(inputs);
 
-      //   role SQL
-      const roleSql = `SELECT
+      //   SQL to get department information
+      const deptSql = `SELECT
       name, 
       id
       FROM
       department`;
 
-      connection.query(roleSql, (err, data) => {
+      connection.query(deptSql, (err, data) => {
         if (err) throw err;
         console.log(data);
 
@@ -297,28 +297,74 @@ function addRole() {
 // Function to view add an employee
 function addEmployee() {
   // inquirer prompt
-  inquirer.prompt([
-    {
-      type: "input",
-      name: "firstname",
-      message: "What is the first name of the employee?",
-      validate: (firstName) => {
-        if (firstName) {
-          return true;
-        } else {
-          console.log("Please enter a valid first name");
-          return false;
-        }
+  inquirer
+    .prompt([
+      //   employee first name
+      {
+        type: "input",
+        name: "firstName",
+        message: "What is the first name of the employee?",
+        validate: (firstName) => {
+          if (firstName) {
+            return true;
+          } else {
+            console.log("Please enter a valid first name");
+            return false;
+          }
+        },
       },
-    },
-    {},
-  ]);
+      // employee last name
+      {
+        type: "input",
+        name: "lastName",
+        message: "What is the last name of the employee?",
+        validate: (lastName) => {
+          if (lastName) {
+            return true;
+          } else {
+            console.log("Please enter a valid last name");
+            return false;
+          }
+        },
+      },
+    ])
+    .then((answer) => {
+      // create input array
+      const inputs = [answer.firstName, answer.lastName];
+
+      //   SQL query to get role information
+      const roleSql = `SELECT
+      role.id,
+      role.title
+      FROM role`;
+
+      connection.query(roleSql, (err, data) => {
+        if (err) throw err;
+
+        // functional loop to create a list of roles
+        const roles = data.map(({ id, title }) => ({
+          // has to be name and value, WHY???
+          name: title,
+          value: id,
+        }));
+
+        console.log(roles);
+
+        // inquirer prompt to select role
+        inquirer.prompt([
+          {
+            type: "list",
+            name: "role",
+            message: "What is the role of the employee?",
+            choices: roles,
+          },
+        ]);
+      });
+    });
 }
 
 // Function to update employee role
-function updateEmployeeRole() {
-  console.log("Execute Update Employee Role");
-}
+function updateEmployeeRole() {}
 
 // Function to update employee manager
 function updateEmployeeManager() {
@@ -335,7 +381,7 @@ function deleteRole() {
   console.log("Execute Delete Role");
 }
 
-// Function to delete an employee
-function deleteEmployee() {
-  console.log("Execute Delete Employee");
-}
+// // Function to delete an employee
+// function deleteEmployee() {
+//   console.log("Execute Delete Employee");
+// }
