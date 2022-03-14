@@ -179,13 +179,34 @@ function viewAllRoles() {
 }
 
 // Function to view employees by department
-function viewEmployeesByDept() {
-  console.log("Execute View Employees By Department");
-}
+function viewEmployeesByDept() {}
 
 // Function to add department
 function addDept() {
-  console.log("Execute Add Department");
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "addDept",
+        message: "What department would you like to add?",
+        validate: (addDept) => {
+          if (addDept) {
+            return true;
+          } else {
+            console.log("Please enter a valid department");
+            return false;
+          }
+        },
+      },
+    ])
+    .then((answer) => {
+      const sql = `INSERT INTO department (name) VALUES (?)`;
+      connection.query(sql, answer.addDept, (err, result) => {
+        if (err) throw err;
+        console.log(`Added ${answer.addDept} to departments!`);
+        viewAllDepartments();
+      });
+    });
 }
 
 // Function to add role
