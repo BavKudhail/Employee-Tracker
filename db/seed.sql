@@ -30,9 +30,7 @@ VALUES
 -- HR ROLES
 ("Head of Human Resources", 25000, 6),
 ("Recruitment Manager", 25000, 6),
-("Recruitment Consultant", 25000, 6),
-
-
+("Recruitment Consultant", 25000, 6);
 
 INSERT INTO employee(first_name, last_name, role_id, manager_id)
 VALUES
@@ -44,4 +42,4 @@ VALUES
 ("Bav", "Kudhail", 4, NULL),
 ("Hannah", "Millar", 5, NULL),
 ("Yavor", "Ivanov", 5, NULL),
-("Mia", "Malora", 6, NULL)
+("Mia", "Malora", 6, NULL);
