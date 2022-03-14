@@ -10,3 +10,8 @@ const connection = mysql2.createConnection({
   password: "",
   database: eTracker_db,
 });
+
+connection.connect(function (err) {
+  if (err) throw err;
+  console.log(`connected as id: ${connection.threadId}`);
+});
