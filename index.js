@@ -1,16 +1,8 @@
 // node modules
-const express = require("express");
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 const figlet = require("figlet");
-
-const PORT = process.env.PORT || 3000;
-const app = express();
-
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
 // connect to database
 const connection = mysql.createConnection(
@@ -498,6 +490,7 @@ function updateEmployeeManager() {
 // Function to view employee by manager
 function viewEmployeeByManager() {
   //   SQL to get manager information
+  // SQL to show employee where manager = selection
 }
 
 // Function to view employees by department
@@ -547,15 +540,48 @@ function viewEmployeesByDept() {
 
 // Function to delete department
 function deleteDept() {
-  console.log("Execute Delete Department");
+  // SQL query to get departments
+  const deptSQL = `SELECT * FROM department`;
+
+  // connect to database
+  connection.query(deptSQL, (err, data) => {
+    if (err) throw err;
+
+    const department = data.map(({ name, id }) => ({
+      name: name,
+      value: id,
+    }));
+
+    // prompt to select the department
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "dept",
+          message: "Please select the department you wish to delete",
+          choices: department,
+        },
+      ])
+      .then((selection) => {
+        const department = selection.dept;
+
+        const sql = `DELETE FROM department WHERE id = ?`;
+        connection.query(sql, department, (err, result) => {
+          if (err) throw err;
+          console.log("Department has been successfully deleted");
+          viewAllDepartments();
+        });
+      });
+  });
 }
 
 // Function to delete a role
 function deleteRole() {
   console.log("Execute Delete Role");
+  // delete role
 }
 
-// // Function to delete an employee
-// function deleteEmployee() {
-//   console.log("Execute Delete Employee");
-// }
+// Function to delete an employee
+function deleteEmployee() {
+  console.log("Execute Delete Employee");
+}
