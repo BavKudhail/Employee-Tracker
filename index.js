@@ -538,7 +538,7 @@ function viewEmployeesByDept() {
   });
 }
 
-// Function to delete department
+// Function to delete a department
 function deleteDept() {
   // SQL query to get departments
   const deptSQL = `SELECT * FROM department`;
@@ -610,5 +610,32 @@ function deleteRole() {
 
 // Function to delete an employee
 function deleteEmployee() {
-  console.log("Execute Delete Employee");
+  const employeeSql = `SELECT * FROM employee`;
+
+  connection.query(employeeSql, (err, data) => {
+    if (err) throw err;
+    const employees = data.map(({ id, first_name, last_name }) => ({
+      name: first_name + " " + last_name,
+      value: id,
+    }));
+
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "employee",
+          message: "Please select the employee you wish to delete",
+          choices: employees,
+        },
+      ])
+      .then((employeeSelection) => {
+        const employee = employeeSelection.employee;
+        const sql = `DELETE FROM employee WHERE id = ?`;
+        connection.query(sql, employee, (err, result) => {
+          if (err) throw err;
+          console.log("Employee has been successfully deleted");
+          viewAllEmployees();
+        });
+      });
+  });
 }
