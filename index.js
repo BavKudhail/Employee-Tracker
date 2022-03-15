@@ -55,6 +55,7 @@ const runPrompt = () => {
           "Delete Department",
           "Delete Role",
           "Delete Employee",
+          "View Budget",
           "None",
         ],
       },
@@ -108,6 +109,10 @@ const runPrompt = () => {
 
         case "Delete Employee":
           deleteEmployee();
+          break;
+
+        case "View Budget":
+          viewBudget();
           break;
 
         case "None":
@@ -484,7 +489,6 @@ function updateEmployeeRole() {
 
 // Function to update employee manager
 function updateEmployeeManager() {
-  console.log("Execute Update Employee Manager");
   const employeeSql = `SELECT * FROM employee`;
   connection.query(employeeSql, (err, data) => {
     if (err) throw err;
@@ -542,8 +546,9 @@ function updateEmployeeManager() {
 
 // Function to view employee by manager
 function viewEmployeeByManager() {
-  //   SQL to get manager information
-  // SQL to show employee where manager = selection
+  //   select manager
+  // THIS CODE NEEDS TO BE DONE :-)
+  // show employees of that manager
 }
 
 // Function to view employees by department
@@ -693,4 +698,33 @@ function deleteEmployee() {
   });
 }
 
-function viewBudget() {}
+function viewBudget() {
+  // 1 - SELECT THE DEPARTMENT
+  const departmentSql = `SELECT * FROM department`;
+  connection.query(departmentSql, (err, data) => {
+    if (err) throw err;
+
+    const departments = data.map(({ id, name }) => ({ name: name, value: id }));
+
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "dept",
+          message:
+            "Please select the department you would like to the budget from",
+          choices: departments,
+        },
+      ])
+      .then((departmentSelection) => {
+        const department = departmentSelection.dept;
+        console.log(department);
+        const budgetSql = `SELECT SUM(salary) FROM role WHERE department_id = ?`;
+        connection.query(budgetSql, department, (err, result) => {
+          if (err) throw err;
+          console.log("Here are the total salaries for your chosen department");
+          console.table(result);
+        });
+      });
+  });
+}
