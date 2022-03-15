@@ -578,7 +578,34 @@ function deleteDept() {
 // Function to delete a role
 function deleteRole() {
   console.log("Execute Delete Role");
-  // delete role
+  const roleSql = `SELECT * FROM role`;
+
+  connection.query(roleSql, (err, data) => {
+    if (err) throw err;
+
+    const roles = data.map(({ id, title }) => ({
+      name: title,
+      value: id,
+    }));
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "role",
+          message: "Please select the role you wish to delete",
+          choices: roles,
+        },
+      ])
+      .then((roleSelection) => {
+        const role = roleSelection.role;
+        const sql = `DELETE FROM role WHERE id = ?`;
+        connection.query(sql, role, (err, result) => {
+          if (err) throw err;
+          console.log("Role has been deleted from database");
+          viewAllRoles();
+        });
+      });
+  });
 }
 
 // Function to delete an employee
