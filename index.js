@@ -485,6 +485,59 @@ function updateEmployeeRole() {
 // Function to update employee manager
 function updateEmployeeManager() {
   console.log("Execute Update Employee Manager");
+  const employeeSql = `SELECT * FROM employee`;
+  connection.query(employeeSql, (err, data) => {
+    if (err) throw err;
+    const employees = data.map(({ id, first_name, last_name }) => ({
+      name: first_name + " " + last_name,
+      value: id,
+    }));
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "name",
+          message: "Which employee would you like to update?",
+          choices: employees,
+        },
+      ])
+      .then((employeeSelection) => {
+        const employee = employeeSelection.employee;
+        const inputs = [];
+        inputs.push(employee);
+
+        const managerSql = `SELECT * FROM employee`;
+
+        connection.query(managerSql, (err, data) => {
+          if (err) throw err;
+          const managers = data.map(({ id, first_name, last_name }) => ({
+            name: first_name + " " + last_name,
+            value: id,
+          }));
+          inquirer
+            .prompt([
+              {
+                type: "list",
+                name: "name",
+                message: "Which is the manager of the employee?",
+                choices: managers,
+              },
+            ])
+            .then((managerSelection) => {
+              const manager = managerSelection.manager;
+              inputs.push(manager);
+              //
+              const sql = `UPDATE employee SET manager_id = ? WHERE id = ?`;
+
+              connection.query(sql, inputs, (err, result) => {
+                if (err) throw err;
+                console.log("Employee's Manager has been successfully updated");
+                viewAllEmployees();
+              });
+            });
+        });
+      });
+  });
 }
 
 // Function to view employee by manager
@@ -639,3 +692,5 @@ function deleteEmployee() {
       });
   });
 }
+
+function viewBudget() {}
