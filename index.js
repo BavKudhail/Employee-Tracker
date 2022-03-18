@@ -1,29 +1,16 @@
 // node modules
-const mysql = require("mysql2");
 const inquirer = require("inquirer");
-const cTable = require("console.table");
 const figlet = require("figlet");
-const res = require("express/lib/response");
+const connection = require("./config/connection");
 
-// connect to database
-const connection = mysql.createConnection(
-  {
-    host: "localhost",
-    // MySQL username,
-    user: "root",
-    // TODO: Add MySQL password here
-    password: "",
-    database: "eTracker_db",
-  },
-  console.log(`Connected to eTracker_db database`)
-);
-
+// If connection is successful display logo
 connection.connect((err) => {
   if (err) throw err;
   //   show logo
   logo();
 });
 
+// Once logo is displayed run prompt
 function logo() {
   figlet("Employee Database!!", function (err, data) {
     if (err) {
@@ -36,6 +23,7 @@ function logo() {
   });
 }
 
+// Run prompt
 const runPrompt = () => {
   inquirer
     .prompt([
@@ -48,6 +36,7 @@ const runPrompt = () => {
           "View All Departments",
           "View All Roles",
           "View All Employees By Department",
+          "View All Employees By Manager",
           "Add Department",
           "Add Role",
           "Add Employee",
@@ -79,6 +68,9 @@ const runPrompt = () => {
         case "View All Employees By Department":
           viewEmployeesByDept();
           break;
+
+        case "View All Employees By Manager":
+          viewEmployeeByManager();
 
         case "Add Department":
           addDept();
@@ -138,13 +130,18 @@ const runPrompt = () => {
 // Function to view all employees
 function viewAllEmployees() {
   const sql = `SELECT 
-    employee.id,
-    employee.first_name,
-    employee.last_name,
-    employee.role_id,
-    employee.manager_id
+    employee.id AS ID,
+    employee.first_name AS First_Name,
+    employee.last_name AS Last_Name,
+    role.title AS Job_Title,
+    department.name AS Department,
+    role.salary AS Salary,
+    CONCAT (manager.first_name, " ", manager.last_name) AS Reporting_Manager
     FROM 
     employee
+    JOIN role ON employee.role_id = role.id
+    JOIN department ON role.department_id = department.id
+    LEFT JOIN employee manager on employee.manager_id = manager.id
     `;
 
   connection.query(sql, (err, rows) => {
@@ -564,7 +561,7 @@ function viewEmployeeByManager() {
       .prompt([
         {
           type: "list",
-          name: "name",
+          name: "manager",
           message: "Which manager would you like to select?",
           choices: managers,
         },
@@ -576,187 +573,6 @@ function viewEmployeeByManager() {
           if (err) throw err;
           console.table(result);
           runPrompt();
-        });
-      });
-  });
-
-  // show employees of that manager
-}
-
-// Function to view employees by department
-function viewEmployeesByDept() {
-  //   SQL to get department information
-  const deptSql = `SELECT
-      name, 
-      id
-      FROM
-      department`;
-
-  connection.query(deptSql, (err, data) => {
-    if (err) throw err;
-    console.log(data);
-
-    // functional loop to create a list of departments
-    const department = data.map(({ name, id }) => ({
-      name: name,
-      value: id,
-    }));
-
-    // prompt to select the department
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "dept",
-          message: "Please select the department you wish to view",
-          choices: department,
-        },
-      ])
-      .then((selection) => {
-        const department = selection.dept;
-        console.log(department);
-
-        // sql query to select department based on their role ID
-        const sql = `SELECT * FROM employee WHERE role_id = ${department}`;
-
-        connection.query(sql, (err, result) => {
-          if (err) throw err;
-          console.log("Showing all employees from your selected department");
-          console.table(result);
-          runPrompt();
-        });
-      });
-  });
-}
-
-// Function to delete a department
-function deleteDept() {
-  // SQL query to get departments
-  const deptSQL = `SELECT * FROM department`;
-
-  // connect to database
-  connection.query(deptSQL, (err, data) => {
-    if (err) throw err;
-
-    const department = data.map(({ name, id }) => ({
-      name: name,
-      value: id,
-    }));
-
-    // prompt to select the department
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "dept",
-          message: "Please select the department you wish to delete",
-          choices: department,
-        },
-      ])
-      .then((selection) => {
-        const department = selection.dept;
-
-        const sql = `DELETE FROM department WHERE id = ?`;
-        connection.query(sql, department, (err, result) => {
-          if (err) throw err;
-          console.log("Department has been successfully deleted");
-          viewAllDepartments();
-        });
-      });
-  });
-}
-
-// Function to delete a role
-function deleteRole() {
-  console.log("Execute Delete Role");
-  const roleSql = `SELECT * FROM role`;
-
-  connection.query(roleSql, (err, data) => {
-    if (err) throw err;
-
-    const roles = data.map(({ id, title }) => ({
-      name: title,
-      value: id,
-    }));
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "role",
-          message: "Please select the role you wish to delete",
-          choices: roles,
-        },
-      ])
-      .then((roleSelection) => {
-        const role = roleSelection.role;
-        const sql = `DELETE FROM role WHERE id = ?`;
-        connection.query(sql, role, (err, result) => {
-          if (err) throw err;
-          console.log("Role has been deleted from database");
-          viewAllRoles();
-        });
-      });
-  });
-}
-
-// Function to delete an employee
-function deleteEmployee() {
-  const employeeSql = `SELECT * FROM employee`;
-
-  connection.query(employeeSql, (err, data) => {
-    if (err) throw err;
-    const employees = data.map(({ id, first_name, last_name }) => ({
-      name: first_name + " " + last_name,
-      value: id,
-    }));
-
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "employee",
-          message: "Please select the employee you wish to delete",
-          choices: employees,
-        },
-      ])
-      .then((employeeSelection) => {
-        const employee = employeeSelection.employee;
-        const sql = `DELETE FROM employee WHERE id = ?`;
-        connection.query(sql, employee, (err, result) => {
-          if (err) throw err;
-          console.log("Employee has been successfully deleted");
-          viewAllEmployees();
-        });
-      });
-  });
-}
-
-function viewBudget() {
-  // 1 - SELECT THE DEPARTMENT
-  const departmentSql = `SELECT * FROM department`;
-  connection.query(departmentSql, (err, data) => {
-    if (err) throw err;
-
-    const departments = data.map(({ id, name }) => ({ name: name, value: id }));
-
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "dept",
-          message:
-            "Please select the department you would like to the budget from",
-          choices: departments,
-        },
-      ])
-      .then((departmentSelection) => {
-        const department = departmentSelection.dept;
-        console.log(department);
-        const budgetSql = `SELECT SUM(salary) FROM role WHERE department_id = ?`;
-        connection.query(budgetSql, department, (err, result) => {
-          if (err) throw err;
-          console.log("Here are the total salaries for your chosen department");
-          console.table(result);
         });
       });
   });
