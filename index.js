@@ -3,6 +3,7 @@ const inquirer = require("inquirer");
 const figlet = require("figlet");
 const connection = require("./config/connection");
 const cTable = require("console.table");
+const res = require("express/lib/response");
 
 // If connection is successful display logo
 connection.connect((err) => {
@@ -415,6 +416,30 @@ function addEmployee() {
     });
 }
 
+// const roleArr = [];
+
+// function updateRolesArray() {
+//   const sql = `SELECT * FROM role`;
+//   connection.query(sql, (err, res) => {
+//     if (err) {
+//       console.log(err);
+//     } else {
+//       res.forEach((role) => {
+//         let roleParams = {
+//           name: role.title,
+//           value: role.id,
+//         };
+//         roleArr.push(roleParams);
+//       });
+//     }
+//   });
+// }
+
+// function updateEmployeeRole() {
+//   updateRolesArray();
+
+// }
+
 // Function to update employee role
 function updateEmployeeRole() {
   const employeeSql = `
@@ -422,7 +447,6 @@ function updateEmployeeRole() {
   `;
   connection.query(employeeSql, (err, data) => {
     if (err) throw err;
-    // functional loop to get names of all employees
     const employee = data.map(({ id, first_name, last_name }) => ({
       name: first_name + " " + last_name,
       value: id,
@@ -439,8 +463,11 @@ function updateEmployeeRole() {
       ])
       .then((employeeSelection) => {
         const employee = employeeSelection.employee;
-        const inputs = [];
-        inputs.push(employee);
+        // employee number 7
+        console.log(employee);
+
+        // const inputs = [];
+        // inputs.push(employee);
 
         const roleSql = `SELECT
         * FROM role`;
@@ -465,17 +492,20 @@ function updateEmployeeRole() {
             ])
             .then((roleSelection) => {
               const role = roleSelection.role;
-              inputs.push(role);
+              console.log(role);
 
-              console.log(inputs);
-              console.log(inputs[0], inputs[1]);
+              console.log(
+                `Here is the employee ${employee} and here is the role ${role}`
+              );
 
-              const updateSql = `
-              UPDATE employee SET role_id = ? WHERE id = ?`;
+              const updateSql = 
+              `
+              UPDATE employee SET role_id=${role} WHERE id=${employee}
+              `;
 
-              connection.query(updateSql, inputs, (err, result) => {
+              connection.query(updateSql, (err, result) => {
                 if (err) throw err;
-                console.log(`${inputs[0]} and ${inputs[1]} ${role}`);
+                console.log("Employee has been updated");
                 viewAllEmployees();
                 // show the updated employee role on screen
               });
@@ -485,9 +515,11 @@ function updateEmployeeRole() {
   });
 }
 
-// BONUS FUNCTIONALITY
+// ======================================================= BONUS FUNCTIONALITY ===========================================
 
+// ============ DEBUG ============================
 // Function to update employee manager
+
 function updateEmployeeManager() {
   const employeeSql = `SELECT * FROM employee`;
   connection.query(employeeSql, (err, data) => {
@@ -543,6 +575,7 @@ function updateEmployeeManager() {
       });
   });
 }
+// ============ DEBUG ============================
 
 // Function to view employee by manager
 function viewEmployeeByManager() {}
