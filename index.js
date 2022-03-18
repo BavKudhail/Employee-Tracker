@@ -3,6 +3,7 @@ const mysql = require("mysql2");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 const figlet = require("figlet");
+const res = require("express/lib/response");
 
 // connect to database
 const connection = mysql.createConnection(
@@ -546,8 +547,39 @@ function updateEmployeeManager() {
 
 // Function to view employee by manager
 function viewEmployeeByManager() {
-  //   select manager
-  // THIS CODE NEEDS TO BE DONE :-)
+  //   SQL query
+  const managerSQL = `
+  SELECT * FROM employee
+  `;
+  // creating a connection
+  connection.query(managerSQL, (err, data) => {
+    if (err) throw err;
+
+    const managers = data.map(({ id, first_name, last_name }) => ({
+      name: first_name + " " + last_name,
+      value: id,
+    }));
+    // inquirer prompt
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "name",
+          message: "Which manager would you like to select?",
+          choices: managers,
+        },
+      ])
+      .then((managerSelection) => {
+        const manager = managerSelection.manager;
+        const sql = `SELECT * FROM employee WHERE manager_id=?`;
+        connection.query(sql, manager, (err, result) => {
+          if (err) throw err;
+          console.table(result);
+          runPrompt();
+        });
+      });
+  });
+
   // show employees of that manager
 }
 
@@ -591,6 +623,7 @@ function viewEmployeesByDept() {
           if (err) throw err;
           console.log("Showing all employees from your selected department");
           console.table(result);
+          runPrompt();
         });
       });
   });
