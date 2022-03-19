@@ -81,12 +81,15 @@ To use the employee tracker type node index.js in the terminal and follow the pr
 ```
 
 ## Screenshot
+![screenshot_1](https://user-images.githubusercontent.com/93915846/159130219-b9cb93e3-75aa-4805-96b8-f2198fde744f.JPG)
+![screenshot_2](https://user-images.githubusercontent.com/93915846/159130220-ad45c64b-316b-4398-ac76-ccbafd5541f8.JPG)
 
-![terminal screenshot](https://raw.githubusercontent.com/BavKudhail/Read-Me-Generator/main/assets/images/screenshot.JPG)
+
 
 ## Walkthrough
+https://user-images.githubusercontent.com/93915846/159130054-3dffd211-9cea-44c6-a34b-3261d7a5367a.mp4
 
-https://user-images.githubusercontent.com/93915846/155854603-056e4ccb-589e-4c17-ba03-c71c40e418d0.mp4
+
 
 ## Contributing
 
