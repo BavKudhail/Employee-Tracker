@@ -8,7 +8,6 @@ const res = require("express/lib/response");
 // If connection is successful display logo
 connection.connect((err) => {
   if (err) throw err;
-  //   show logo
   logo();
 });
 
@@ -34,15 +33,17 @@ const runPrompt = () => {
         name: "action",
         message: "What would you like to do today?",
         choices: [
-          "View All Employees",
+          // REQUIRED FUNCTIONALITY
           "View All Departments",
           "View All Roles",
-          "View All Employees By Department",
-          "View All Employees By Manager",
+          "View All Employees",
           "Add Department",
           "Add Role",
           "Add Employee",
           "Update Employee Role",
+          // BONUS FUNCTIONALITY
+          "View All Employees By Manager",
+          "View All Employees By Department",
           "Update Employee Manager",
           "Delete Department",
           "Delete Role",
@@ -53,12 +54,9 @@ const runPrompt = () => {
       },
     ])
     .then(function (answers) {
+      console.log(answers.action);
       switch (answers.action) {
         //   cases
-        case "View All Employees":
-          viewAllEmployees();
-          break;
-
         case "View All Departments":
           viewAllDepartments();
           break;
@@ -67,12 +65,9 @@ const runPrompt = () => {
           viewAllRoles();
           break;
 
-        case "View All Employees By Department":
-          viewEmployeesByDept();
+        case "View All Employees":
+          viewAllEmployees();
           break;
-
-        case "View All Employees By Manager":
-          viewEmployeeByManager();
 
         case "Add Department":
           addDept();
@@ -88,6 +83,10 @@ const runPrompt = () => {
 
         case "Update Employee Role":
           updateEmployeeRole();
+          break;
+
+        case "View All Employees By Manager":
+          viewEmployeeByManager();
           break;
 
         case "Update Employee Manager":
@@ -110,6 +109,10 @@ const runPrompt = () => {
           viewBudget();
           break;
 
+        case "View All Employees By Department":
+          viewEmployeesByDept();
+          break;
+
         case "None":
           // end
           figlet("Goodbye!", function (err, data) {
@@ -124,10 +127,13 @@ const runPrompt = () => {
 
           connection.end();
       }
+    })
+    .catch((err) => {
+      console.error(err);
     });
 };
 
-// FUNCTIONS
+// ======================================================= REQUIRED FUNCTIONALITY ===========================================
 
 // Function to view all departments
 function viewAllDepartments() {
@@ -139,7 +145,10 @@ function viewAllDepartments() {
   `;
 
   connection.query(sql, (err, rows) => {
-    if (err) throw err;
+    if (err) {
+      console.log(err);
+      runPrompt;
+    }
     console.table(rows);
     runPrompt();
   });
@@ -165,19 +174,11 @@ function viewAllRoles() {
 
 // Function to view all employees
 function viewAllEmployees() {
-  const sql = `SELECT 
-    employee.id AS ID,
-    employee.first_name AS First_Name,
-    employee.last_name AS Last_Name,
-    role.title AS Job_Title,
-    department.name AS Department,
-    role.salary AS Salary,
-    CONCAT (manager.first_name, " ", manager.last_name) AS Reporting_Manager
-    FROM 
-    employee
-    JOIN role ON employee.role_id = role.id
-    JOIN department ON role.department_id = department.id
-    LEFT JOIN employee manager on employee.manager_id = manager.id
+  const sql = `SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, role.title AS job_title, department.name AS department, role.salary AS salary, CONCAT (manager.first_name, " ", manager.last_name) AS manager
+  FROM employee
+  JOIN role ON employee.role_id = role.id
+  JOIN department ON role.department_id = department.id
+  LEFT JOIN employee manager on employee.manager_id = manager.id
     `;
 
   connection.query(sql, (err, rows) => {
@@ -207,9 +208,10 @@ function addDept() {
     ])
     .then((answer) => {
       const sql = `INSERT INTO department (name) VALUES (?)`;
-      connection.query(sql, answer.addDept, (err, result) => {
+      const departmentName = answer.addDept;
+      connection.query(sql, departmentName, (err, result) => {
         if (err) throw err;
-        console.log(`Added ${answer.addDept} to departments!`);
+        console.log(`Added ${departmentName} to departments!`);
         viewAllDepartments();
       });
     });
@@ -250,9 +252,7 @@ function addRole() {
       },
     ])
     .then((answer) => {
-      // create array using destructuring
       const inputs = [answer.role, answer.salary];
-      console.log(inputs);
 
       //   SQL to get department information
       const deptSql = `SELECT
@@ -263,7 +263,6 @@ function addRole() {
 
       connection.query(deptSql, (err, data) => {
         if (err) throw err;
-        console.log(data);
 
         // functional loop to create a list of departments
         const deptartments = data.map(({ name, id }) => ({
@@ -286,7 +285,6 @@ function addRole() {
             const dept = choice.dept;
             inputs.push(dept);
 
-            // sql query with dynamic options
             const sql = `INSERT INTO role (title, salary, department_id)
         VALUES (?, ?, ?)`;
 
@@ -349,12 +347,9 @@ function addEmployee() {
 
         // functional loop to create a list of roles
         const roles = data.map(({ id, title }) => ({
-          // has to be name and value, WHY???
           name: title,
           value: id,
         }));
-
-        console.log(roles);
 
         // inquirer prompt to select role
         inquirer
@@ -416,30 +411,6 @@ function addEmployee() {
     });
 }
 
-// const roleArr = [];
-
-// function updateRolesArray() {
-//   const sql = `SELECT * FROM role`;
-//   connection.query(sql, (err, res) => {
-//     if (err) {
-//       console.log(err);
-//     } else {
-//       res.forEach((role) => {
-//         let roleParams = {
-//           name: role.title,
-//           value: role.id,
-//         };
-//         roleArr.push(roleParams);
-//       });
-//     }
-//   });
-// }
-
-// function updateEmployeeRole() {
-//   updateRolesArray();
-
-// }
-
 // Function to update employee role
 function updateEmployeeRole() {
   const employeeSql = `
@@ -464,10 +435,6 @@ function updateEmployeeRole() {
       .then((employeeSelection) => {
         const employee = employeeSelection.employee;
         // employee number 7
-        console.log(employee);
-
-        // const inputs = [];
-        // inputs.push(employee);
 
         const roleSql = `SELECT
         * FROM role`;
@@ -492,14 +459,8 @@ function updateEmployeeRole() {
             ])
             .then((roleSelection) => {
               const role = roleSelection.role;
-              console.log(role);
 
-              console.log(
-                `Here is the employee ${employee} and here is the role ${role}`
-              );
-
-              const updateSql = 
-              `
+              const updateSql = `
               UPDATE employee SET role_id=${role} WHERE id=${employee}
               `;
 
@@ -516,9 +477,6 @@ function updateEmployeeRole() {
 }
 
 // ======================================================= BONUS FUNCTIONALITY ===========================================
-
-// ============ DEBUG ============================
-// Function to update employee manager
 
 function updateEmployeeManager() {
   const employeeSql = `SELECT * FROM employee`;
@@ -538,9 +496,7 @@ function updateEmployeeManager() {
         },
       ])
       .then((employeeSelection) => {
-        const employee = employeeSelection.employee;
-        const inputs = [];
-        inputs.push(employee);
+        const employee = employeeSelection.name;
 
         const managerSql = `SELECT * FROM employee`;
 
@@ -560,12 +516,11 @@ function updateEmployeeManager() {
               },
             ])
             .then((managerSelection) => {
-              const manager = managerSelection.manager;
-              inputs.push(manager);
-              //
-              const sql = `UPDATE employee SET manager_id = ? WHERE id = ?`;
+              const manager = managerSelection.name;
 
-              connection.query(sql, inputs, (err, result) => {
+              const sql = `UPDATE employee SET manager_id=${manager} WHERE id=${employee}`;
+
+              connection.query(sql, (err, result) => {
                 if (err) throw err;
                 console.log("Employee's Manager has been successfully updated");
                 viewAllEmployees();
@@ -575,64 +530,31 @@ function updateEmployeeManager() {
       });
   });
 }
-// ============ DEBUG ============================
-
-// Function to view employee by manager
-function viewEmployeeByManager() {}
 
 // Function to view employees by department
 function viewEmployeesByDept() {
-  // View employees by department
-  // 1 - Select a department
+  const deptSql = `SELECT employee.first_name, 
+                      employee.last_name, 
+                      department.name AS department
+               FROM employee 
+               LEFT JOIN role ON employee.role_id = role.id 
+               LEFT JOIN department ON role.department_id = department.id`;
 
-  //   SQL to get department information
-  const deptSql = `SELECT
-      name, 
-      id
-      FROM
-      department`;
-
-  connection.query(deptSql, (err, data) => {
+  connection.query(deptSql, (err, rows) => {
     if (err) throw err;
-    console.log(data);
-
-    // functional loop to create a list of departments
-    const department = data.map(({ name, id }) => ({
-      name: name,
-      value: id,
-    }));
-
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "dept",
-          message: "Please select the department you wish to view",
-          choices: department,
-        },
-      ])
-      .then((selection) => {
-        const department = selection.dept;
-
-        const sql = `SELECT * FROM employee WHERE role_id = ?`;
-
-        connection.query(sql, department, (err, result) => {
-          if (err) throw err;
-          console.log("Showing all employees from your selected department");
-          console.table(result);
-        });
-      });
+    console.table(rows);
+    runPrompt();
   });
 }
 
 // Function to view employee by manager
 function viewEmployeeByManager() {
   //   SQL query
-  const managerSQL = `
+  const empManagerSQL = `
   SELECT * FROM employee
   `;
   // creating a connection
-  connection.query(managerSQL, (err, data) => {
+  connection.query(empManagerSQL, (err, data) => {
     if (err) throw err;
 
     const managers = data.map(({ id, first_name, last_name }) => ({
@@ -789,6 +711,7 @@ function viewBudget() {
           if (err) throw err;
           console.log("Here are the total salaries for your chosen department");
           console.table(result);
+          runPrompt();
         });
       });
   });

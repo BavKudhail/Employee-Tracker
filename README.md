@@ -40,7 +40,7 @@ WHEN I choose to add an employee
 THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database ✅
 
 WHEN I choose to update an employee role
-THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
+THEN I am prompted to select an employee to update and their new role and this information is updated in the database ✅
 ```
 
 ## Mock-Up
@@ -99,9 +99,9 @@ You might also want to include a `seeds.sql` file to pre-populate your database,
 
 Try to add some additional functionality to your application, such as the ability to do the following:
 
-- Update employee managers.
+- Update employee managers. ✅
 
-- View employees by manager.
+- View employees by manager. ✅
 
 - View employees by department. ✅
 
